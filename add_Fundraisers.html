@@ -133,7 +133,7 @@
             const postData = { 'FUNDRAISER_ID': FundraiserID, 'CITY': CityName, 'ORGANIZER': Organizer };
 
             // Send the POST request to NodeJS API server
-            fetch('http://localhost:7070/api/fundraisers', {
+            fetch('http://localhost:7090/api/fundraisers', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -158,7 +158,7 @@
 
         function deleteByID(id) {
             // Send DELETE request to API
-            fetch('http://localhost:7070/api/fundraisers/' + id, {
+            fetch('http://localhost:7090/api/fundraisers/' + id, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'

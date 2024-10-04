@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate to Fundraiser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        main {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .fundraiser-details {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Donate to Fundraiser</h1>
+    </header>
+
+    <main>
+        <div id="fundraiserDetails" class="fundraiser-details">
+            <h2 id="fundraiserTitle">Fundraiser: [Loading...]</h2>
+            <p><strong>Organizer:</strong> <span id="organizer">[Loading...]</span></p>
+            <p><strong>Target Funding:</strong> <span id="targetFunding">[Loading...]</span></p>
+            <p><strong>Current Funding:</strong> <span id="currentFunding">[Loading...]</span></p>
+        </div>
+
+        <form id="donationForm">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="amount">Donation Amount (AUD):</label>
+            <input type="number" id="amount" name="amount" min="5" step="0.01" required>
+
+            <button type="submit">Submit my donation</button>
+        </form>
+    </main>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let fundraiserId = urlParams.get('fundraiserId');
+
+        if (!fundraiserId) {
+            fundraiserId = localStorage.getItem('fundraiserId');
+        }
+
+        if (!fundraiserId) {
+            alert('No fundraiser selected. Please select a fundraiser first.');
+            window.location.href = '/Fundraisers';
+        } else {
+            localStorage.setItem('fundraiserId', fundraiserId);
+            fetchFundraiserDetails();
+        }
+
+        function fetchFundraiserDetails() {
+            fetch(`/api/fundraisers/${fundraiserId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('fundraiserTitle').textContent = `Fundraiser: ${data.CAPTION}`;
+                    document.getElementById('organizer').textContent = data.ORGANIZER;
+                    document.getElementById('targetFunding').textContent = `$${data.TARGET_FUNDING.toFixed(2)}`;
+                    document.getElementById('currentFunding').textContent = `$${data.CURRENT_FUNDING.toFixed(2)}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching fundraiser details:', error);
+                    alert('Could not load fundraiser details. Please try again later.');
+                });
+        }
+
+        document.getElementById('donationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            if (amount < 5) {
+                alert('The minimum donation amount is 5 AUD.');
+                return;
+            }
+
+            const donationData = {
+                NAME: name,
+                DATE: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
+                AMOUNT: amount,
+                GIVER: 'Individual',
+                FUNDRAISER_ID: fundraiserId
+            };
+
+            fetch('/api/donations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(donationData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Thank you for your donation!');
+                window.location.href = `/Fundraisers?fundraiserId=${fundraiserId}`;
+            })
+            .catch(error => {
+                console.error('Error processing donation:', error);
+                alert('Could not process your donation. Please try again later.');
+            });
+        });
+    </script>
+
+</body>
+</html>

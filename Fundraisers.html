@@ -75,10 +75,10 @@
         input[type="button"]:hover {
             background-color: #45a049;
         }
-        #fundraiserData, #categoryData {
+        #fundraiserData, #categoryData, #donationData {
             margin-top: 20px;
         }
-        #fundraiserData div, #categoryData div {
+        #fundraiserData div, #categoryData div, #donationData div {
             background-color: #e9e9e9;
             padding: 10px;
             margin: 10px 0;
@@ -115,8 +115,13 @@
         <!-- Display Fundraiser Data -->
         <div id="fundraiserData"></div>
 
-        <!-- Display Category Data -->
-        <div id="categoryData"></div>
+        <!-- Display Donation Data -->
+        <div id="donationData"></div>
+
+        <!-- Donate Button -->
+        <section>
+            <input type="button" value="Donate" onclick="redirectToDonationPage()" />
+        </section>
 
         <!-- Search Fundraiser by ID -->
         <section>
@@ -132,49 +137,61 @@
     </footer>
 
     <script>
-        // Fetch all Fundraisers and display
-        fetch("http://localhost:7070/api/fundraisers")
-            .then(response => response.json())
-            .then(data => {
-                const dataDiv = document.getElementById("fundraiserData");
-                dataDiv.innerHTML = "";
+        // Fetch fundraiser and donation data by fundraiser ID
+        function searchFundraiserById() {
+            const fundraiserId = document.getElementById('FundraiserId').value;
 
-                if (data.length > 0) {
-                    data.forEach(fundraiser => {
-                        const newDiv = document.createElement("div");
-                        newDiv.textContent = `FUNDRAISER ID: ${fundraiser.FUNDRAISER_ID}, ORGANIZER: ${fundraiser.ORGANIZER}`;
-                        dataDiv.appendChild(newDiv);
-                    });
-                } else {
-                    dataDiv.textContent = "No fundraiser data";
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching the database", error);
-                document.getElementById("fundraiserData").textContent = "Failed to load data";
-            });
+            // Fetch fundraiser details from the correct API
+            fetch(`http://localhost:7090/api/fundraiser/${fundraiserId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const fundraiserDiv = document.getElementById("fundraiserData");
+                    const donationDiv = document.getElementById("donationData");
 
-        // Fetch all Categories and display
-        fetch("http://localhost:7070/api/categories")
-            .then(response => response.json())
-            .then(data => {
-                const dataDiv = document.getElementById("categoryData");
-                dataDiv.innerHTML = "";
+                    // Clear previous content
+                    fundraiserDiv.innerHTML = "";
+                    donationDiv.innerHTML = "";
 
-                if (data.length > 0) {
-                    data.forEach(category => {
-                        const newDiv = document.createElement("div");
-                        newDiv.textContent = `Category ID: ${category.CATEGORY_ID}, NAME: ${category.NAME}`;
-                        dataDiv.appendChild(newDiv);
-                    });
-                } else {
-                    dataDiv.textContent = "No category data";
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching the database", error);
-                document.getElementById("categoryData").textContent = "Failed to load data";
-            });
+                    // Display fundraiser details
+                    fundraiserDiv.innerHTML = `
+                        <div>
+                            <strong>Fundraiser ID:</strong> ${data.FUNDRAISER_ID}<br>
+                            <strong>Organizer:</strong> ${data.ORGANIZER}<br>
+                            <strong>Caption:</strong> ${data.CAPTION}<br>
+                            <strong>Target Funding:</strong> ${data.TARGET_FUNDING}<br>
+                            <strong>Current Funding:</strong> ${data.CURRENT_FUNDING}<br>
+                            <strong>City:</strong> ${data.CITY}<br>
+                            <strong>Active:</strong> ${data.ACTIVE ? 'Yes' : 'No'}<br>
+                        </div>
+                    `;
+
+                    // Display donation details
+                    if (data.donations && data.donations.length > 0) {
+                        data.donations.forEach(donation => {
+                            const donationElement = document.createElement('div');
+                            donationElement.innerHTML = `
+                                <strong>Donation ID:</strong> ${donation.DONATION_ID}<br>
+                                <strong>Donor Name:</strong> ${donation.NAME}<br>
+                                <strong>Date:</strong> ${donation.DATE}<br>
+                                <strong>Amount:</strong> $${donation.AMOUNT}<br>
+                                <strong>Giver:</strong> ${donation.GIVER}
+                            `;
+                            donationDiv.appendChild(donationElement);
+                        });
+                    } else {
+                        donationDiv.textContent = "No donations available.";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching fundraiser details", error);
+                    document.getElementById("fundraiserData").textContent = "Failed to load fundraiser data.";
+                });
+        }
+
+        // Redirect to the donation page
+        function redirectToDonationPage() {
+            window.location.href = '/donation';
+        }
     </script>
 </body>
 </html>
