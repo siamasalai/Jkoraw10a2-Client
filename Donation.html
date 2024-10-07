@@ -5,79 +5,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donate to Fundraiser</title>
     <style>
+         :root {
+            --primary-color: #4caf50;
+            --secondary-color: #45a049;
+            --background-color: #f4f4f4;
+            --text-color:#3a7c40 ;
+            --card-background: #fff;
+            --input-border: #ccc;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
+            font-family: 'Arial', sans-serif;
+            background-color: lightgreen;
+            color: var(--text-color);
             margin: 0;
             padding: 0;
+            line-height: 1.6;
         }
+
         header {
-            background-color: #4caf50;
+            background-color: #3a7c40;
             color: white;
-            padding: 20px;
+            padding: 2rem 0;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+		
+		 nav {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #f0f0f0; /* Adjusted to fit header background */
+            margin: 0 15px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+            color: pink;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
         main {
-            width: 80%;
-            margin: auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: black;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
-        h1, h2 {
-            text-align: center;
-            color: #333;
+
+        h2 {
+            color: black;
         }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding: 20px;
+		h1 {
+			color: white;
+		}
+
+        #fundraiserSelector {
+            margin-bottom: 2rem;
         }
-        label {
-            font-weight: bold;
-        }
-        input[type="text"], input[type="number"] {
-            padding: 10px;
+
+        select, input, button {
             width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 1rem;
         }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 12 12'%3E%3Cpath d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+
         button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4caf50;
+            background-color: var(--primary-color);
             color: white;
+            border: none;
             cursor: pointer;
-            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
+
         button:hover {
-            background-color: #45a049;
+            background-color: var(--secondary-color);
         }
+
         .fundraiser-details {
             background-color: #f9f9f9;
-            padding: 15px;
-            margin: 20px 0;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .fundraiser-details h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .fundraiser-details p {
+            margin: 0.5rem 0;
+        }
+
+        .fundraiser-details strong {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 600px) {
+            main {
+                width: 95%;
+                padding: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-
     <header>
         <h1>Donate to Fundraiser</h1>
+        <nav>
+            |<a href="/fundraisers">Fundraisers</a> |
+			
+        </nav>
     </header>
 
     <main>
+	<img src="img/funside.jpg" alt="funside" width="800" height="500">
+        <div id="fundraiserSelector">
+            <label for="fundraiserSelect">Select a Fundraiser:</label>
+            <select id="fundraiserSelect"></select>
+        </div>
+
         <div id="fundraiserDetails" class="fundraiser-details">
             <h2 id="fundraiserTitle">Fundraiser: [Loading...]</h2>
             <p><strong>Organizer:</strong> <span id="organizer">[Loading...]</span></p>
             <p><strong>Target Funding:</strong> <span id="targetFunding">[Loading...]</span></p>
-            <p><strong>Current Funding:</strong> <span id="currentFunding">[Loading...]</span></p>
+            <p><strong>Current Funding:</strong> <span id="currentFunding">[Loading...]</span>
+            <p><strong>Category:</strong> <span id="category">[Loading...]</span></p>
+            <p><strong>City:</strong> <span id="city">[Loading...]</span></p>
         </div>
 
         <form id="donationForm">
@@ -87,34 +164,71 @@
             <label for="amount">Donation Amount (AUD):</label>
             <input type="number" id="amount" name="amount" min="5" step="0.01" required>
 
+            <label for="giverType">Giver Type:</label>
+            <select id="giverType" name="giverType" required>
+                <option value="Individual">Individual</option>
+                <option value="Organization">Organization</option>
+            </select>
+
             <button type="submit">Submit my donation</button>
         </form>
     </main>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        let fundraiserId = urlParams.get('fundraiserId');
+	
+        let fundraiserId = null;
 
-        if (!fundraiserId) {
-            fundraiserId = localStorage.getItem('fundraiserId');
-        }
-
-        if (!fundraiserId) {
-            alert('No fundraiser selected. Please select a fundraiser first.');
-            window.location.href = '/Fundraisers';
-        } else {
-            localStorage.setItem('fundraiserId', fundraiserId);
-            fetchFundraiserDetails();
+        function fetchFundraiserList() {
+            fetch('/api/fundraisers')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received fundraiser list:', data);  // Log the received data
+                    const select = document.getElementById('fundraiserSelect');
+                    data.forEach(fundraiser => {
+                        const option = document.createElement('option');
+                        option.value = fundraiser.FUNDRAISER_ID;
+                        option.textContent = fundraiser.CAPTION;
+                        select.appendChild(option);
+                    });
+                    select.addEventListener('change', (event) => {
+                        fundraiserId = event.target.value;
+                        fetchFundraiserDetails();
+                    });
+                    document.getElementById('fundraiserSelector').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching fundraiser list:', error);
+                    alert('Could not load fundraiser list. Please try again later.');
+                });
         }
 
         function fetchFundraiserDetails() {
+            if (!fundraiserId) {
+                document.getElementById('fundraiserDetails').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('fundraiserDetails').style.display = 'block';
             fetch(`/api/fundraisers/${fundraiserId}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Received fundraiser details:', data);  // Log the received data
                     document.getElementById('fundraiserTitle').textContent = `Fundraiser: ${data.CAPTION}`;
                     document.getElementById('organizer').textContent = data.ORGANIZER;
                     document.getElementById('targetFunding').textContent = `$${data.TARGET_FUNDING.toFixed(2)}`;
                     document.getElementById('currentFunding').textContent = `$${data.CURRENT_FUNDING.toFixed(2)}`;
+                    document.getElementById('category').textContent = data.CATEGORY_NAME;
+                    document.getElementById('city').textContent = data.CITY;
                 })
                 .catch(error => {
                     console.error('Error fetching fundraiser details:', error);
@@ -125,8 +239,14 @@
         document.getElementById('donationForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
+            if (!fundraiserId) {
+                alert('Please select a fundraiser before submitting a donation.');
+                return;
+            }
+
             const name = document.getElementById('name').value;
             const amount = parseFloat(document.getElementById('amount').value);
+            const giverType = document.getElementById('giverType').value;
 
             if (amount < 5) {
                 alert('The minimum donation amount is 5 AUD.');
@@ -135,9 +255,9 @@
 
             const donationData = {
                 NAME: name,
-                DATE: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
+                DATE: new Date().toISOString().split('T')[0],
                 AMOUNT: amount,
-                GIVER: 'Individual',
+                GIVER: giverType,
                 FUNDRAISER_ID: fundraiserId
             };
 
@@ -148,17 +268,32 @@
                 },
                 body: JSON.stringify(donationData),
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Donation response:', data);  // Log the received data
                 alert('Thank you for your donation!');
-                window.location.href = `/Fundraisers?fundraiserId=${fundraiserId}`;
+                fetchFundraiserDetails(); // Refresh fundraiser details to show updated funding
             })
             .catch(error => {
                 console.error('Error processing donation:', error);
                 alert('Could not process your donation. Please try again later.');
             });
         });
-    </script>
 
+        // Initialize the page
+        const urlParams = new URLSearchParams(window.location.search);
+        fundraiserId = urlParams.get('fundraiserId');
+
+        if (fundraiserId) {
+            fetchFundraiserDetails();
+        } else {
+            fetchFundraiserList();
+        }
+    </script>
 </body>
 </html>
